@@ -22,7 +22,7 @@ export default function Inscricao() {
         const { data: alunosDb } = await supabase.from("alunos").select("id, nome, serie, curso");
         const inscricoesToInsert = rows.map((row: any) => {
           const oficina = oficinasDb?.find((o: any) => o.nome === row["Oficina"]);
-          let aluno = alunosDb?.find((a: any) => a.nome === row["Nome"] && a.serie === row["Série"] && a.curso === row["Curso"]);
+          const aluno = alunosDb?.find((a: any) => a.nome === row["Nome"] && a.serie === row["Série"] && a.curso === row["Curso"]);
           // Se não existe, cria aluno
           if (!aluno && row["Nome"] && row["Série"] && row["Curso"]) {
             // Cria aluno e retorna id depois
