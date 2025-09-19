@@ -1,5 +1,6 @@
+
 import Link from 'next/link';
-import { SpeedInsights } from "@vercel/speed-insights/next";
+
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
