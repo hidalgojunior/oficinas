@@ -1,3 +1,4 @@
+import Link from 'next/link';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect } from "react";
@@ -177,7 +178,7 @@ export default function Inscricao() {
           <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 rounded" disabled={loading}>{loading ? "Enviando..." : "Inscrever"}</button>
         </form>
         <div className="mt-6 text-center">
-          <a href="/" className="text-blue-700 hover:underline">Voltar para o início</a>
+          <Link href="/" className="text-blue-700 hover:underline">Voltar para o início</Link>
         </div>
       </div>
     </main>
