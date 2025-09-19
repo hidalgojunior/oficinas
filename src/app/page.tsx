@@ -18,6 +18,8 @@ export default function Home() {
           <Link href="/presenca" className="block bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Controle de Presença</Link>
           <Link href="/dashboard" className="block bg-black hover:bg-blue-900 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Dashboard Interativo</Link>
           <Link href="/alunos" className="block bg-white hover:bg-blue-100 text-blue-700 font-bold py-4 px-6 rounded-xl text-center shadow-lg border-2 border-blue-600 transition">Lista de Alunos</Link>
+          <Link href="/teste" className="block bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Página de Teste</Link>
+          <Link href="/alunos-simples" className="block bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Alunos (Simples)</Link>
         </div>
         <div className="text-center text-gray-600 mt-4">
           <span className="font-bold">Evento:</span> Oficinas Etec Antonio Devisate - {new Date().toLocaleDateString('pt-BR')}
