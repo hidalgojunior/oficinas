@@ -19,8 +19,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 export default function Dashboard() {
   const [oficinas, setOficinas] = useState<any[]>([]);
-  const [cursos, setCursos] = useState(["ADM", "DS"]);
-  const [series, setSeries] = useState(["1º", "2º"]);
   const [filtro, setFiltro] = useState({ oficina: "", curso: "", serie: "" });
   const [resumo, setResumo] = useState({ inscritos: 0, presentes: 0, ausentes: 0 });
   const [grafOficinas, setGrafOficinas] = useState<any[]>([]);

@@ -20,12 +20,12 @@ export default function Alunos() {
           curso: row["Curso"] || row["curso"],
         })).filter((a: any) => a.nome && a.serie && a.curso);
         if (alunosToInsert.length) {
-          const { error } = await supabase.from("alunos").insert(alunosToInsert);
-          if (!error) {
+          const result = await supabase.from("alunos").insert(alunosToInsert);
+          if (!result.error) {
             alert("Alunos importados com sucesso!");
             window.location.reload();
           } else {
-            alert("Erro ao importar alunos: " + error.message);
+            alert("Erro ao importar alunos: " + result.error.message);
           }
         } else {
           alert("Nenhum aluno válido encontrado no arquivo.");
