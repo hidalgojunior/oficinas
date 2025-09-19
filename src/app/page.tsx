@@ -1,43 +1,32 @@
-import Image from "next/image";
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
+      <div className="w-full max-w-2xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
+        <div className="flex items-center gap-4 mb-6">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" className="w-16 h-16" />
+          <div>
+            <h1 className="text-3xl font-extrabold text-blue-700">Oficinas Etec Devisate</h1>
+            <p className="text-gray-700">Controle de Presenças e Participação</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Link href="/inscricao" className="block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Inscrição de Aluno</Link>
+          <Link href="/presenca" className="block bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Controle de Presença</Link>
+          <Link href="/dashboard" className="block bg-black hover:bg-blue-900 text-white font-bold py-4 px-6 rounded-xl text-center shadow-lg transition">Dashboard Interativo</Link>
+          <Link href="/alunos" className="block bg-white hover:bg-blue-100 text-blue-700 font-bold py-4 px-6 rounded-xl text-center shadow-lg border-2 border-blue-600 transition">Lista de Alunos</Link>
+        </div>
+        <div className="text-center text-gray-600 mt-4">
+          <span className="font-bold">Evento:</span> Oficinas Etec Antonio Devisate - {new Date().toLocaleDateString('pt-BR')}
+        </div>
+      </div>
+      <footer className="text-white mt-8 opacity-80">
+        &copy; {new Date().getFullYear()} Etec Devisate - Sistema de Oficinas
+      </footer>
+    </main>
+  );
+}
             />
             Deploy now
           </a>
