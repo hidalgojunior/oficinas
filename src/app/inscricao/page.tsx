@@ -3,6 +3,37 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Inscricao() {
+  // Função para exportar inscrições em CSV
+  const [inscricoes, setInscricoes] = useState<any[]>([]);
+  useEffect(() => {
+    supabase
+      .from("inscricoes")
+      .select("id, alunos(nome, serie, curso), oficinas(nome, horario)")
+      .order("alunos.nome")
+      .then(({ data }) => setInscricoes(data || []));
+  }, []);
+
+  function exportCSV() {
+    if (!inscricoes.length) return;
+    const rows = inscricoes.map((row: any) => ({
+      Nome: row.alunos?.nome,
+      Série: row.alunos?.serie,
+      Curso: row.alunos?.curso,
+      Oficina: row.oficinas?.nome,
+      Horário: row.oficinas?.horario,
+    }));
+    import("papaparse").then(Papa => {
+      const csv = Papa.unparse(rows);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "inscricoes.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
   const [nome, setNome] = useState("");
   const [serie, setSerie] = useState("");
   const [curso, setCurso] = useState("");
@@ -58,6 +89,15 @@ export default function Inscricao() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
+      <div className="w-full max-w-3xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
+        <button
+          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          onClick={exportCSV}
+          disabled={!inscricoes.length}
+        >
+          Exportar Inscrições CSV
+        </button>
+      </div>
       <div className="w-full max-w-lg mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
         <h1 className="text-2xl font-bold mb-4 text-blue-700">Inscrição nas Oficinas</h1>
         {msg && (

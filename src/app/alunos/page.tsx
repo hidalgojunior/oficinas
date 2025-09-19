@@ -19,10 +19,40 @@ export default function Alunos() {
     fetchAlunos();
   }, []);
 
+  // Função para exportar CSV
+  function exportCSV() {
+    if (!alunos.length) return;
+    const rows = alunos.map((row: any) => ({
+      Nome: row.alunos?.nome,
+      Série: row.alunos?.serie,
+      Curso: row.alunos?.curso,
+      Oficina: row.oficinas?.nome,
+      Horário: row.oficinas?.horario,
+    }));
+    import("papaparse").then(Papa => {
+      const csv = Papa.unparse(rows);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "alunos.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
       <div className="w-full max-w-3xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
         <h1 className="text-2xl font-bold mb-4 text-blue-700">Alunos Cadastrados</h1>
+        <button
+          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          onClick={exportCSV}
+          disabled={loading || !alunos.length}
+        >
+          Exportar CSV
+        </button>
         {loading ? (
           <div className="text-center">Carregando...</div>
         ) : (

@@ -1,6 +1,20 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 export default function Dashboard() {
   const [oficinas, setOficinas] = useState<any[]>([]);
@@ -132,72 +146,97 @@ export default function Dashboard() {
         </div>
         <div className="bg-white p-4 rounded shadow mb-8">
           <h2 className="font-bold text-lg mb-2">Presenças por Oficina</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-blue-200">
-                  <th className="py-1 px-2">Oficina</th>
-                  <th className="py-1 px-2">Presentes</th>
-                  <th className="py-1 px-2">Ausentes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {grafOficinas.map((g: any) => (
-                  <tr key={g.nome}>
-                    <td className="py-1 px-2">{g.nome}</td>
-                    <td className="py-1 px-2 text-green-700 font-bold">{g.presentes}</td>
-                    <td className="py-1 px-2 text-red-700 font-bold">{g.ausentes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Bar
+            data={{
+              labels: grafOficinas.map((g: any) => g.nome),
+              datasets: [
+                {
+                  label: "Presentes",
+                  data: grafOficinas.map((g: any) => g.presentes),
+                  backgroundColor: "rgba(37, 99, 235, 0.7)",
+                },
+                {
+                  label: "Ausentes",
+                  data: grafOficinas.map((g: any) => g.ausentes),
+                  backgroundColor: "rgba(239, 68, 68, 0.7)",
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "top" } },
+            }}
+          />
         </div>
         <div className="bg-white p-4 rounded shadow mb-8">
           <h2 className="font-bold text-lg mb-2">Presenças por Curso</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-blue-200">
-                  <th className="py-1 px-2">Curso</th>
-                  <th className="py-1 px-2">Presentes</th>
-                  <th className="py-1 px-2">Ausentes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {grafCursos.map((g: any) => (
-                  <tr key={g.nome}>
-                    <td className="py-1 px-2">{g.nome}</td>
-                    <td className="py-1 px-2 text-green-700 font-bold">{g.presentes}</td>
-                    <td className="py-1 px-2 text-red-700 font-bold">{g.ausentes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Pie
+            data={{
+              labels: grafCursos.map((g: any) => g.nome + " (Presentes)"),
+              datasets: [
+                {
+                  label: "Presentes",
+                  data: grafCursos.map((g: any) => g.presentes),
+                  backgroundColor: ["#2563eb", "#ef4444"],
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "top" } },
+            }}
+          />
+          <Pie
+            data={{
+              labels: grafCursos.map((g: any) => g.nome + " (Ausentes)"),
+              datasets: [
+                {
+                  label: "Ausentes",
+                  data: grafCursos.map((g: any) => g.ausentes),
+                  backgroundColor: ["#2563eb", "#ef4444"],
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "top" } },
+            }}
+          />
         </div>
         <div className="bg-white p-4 rounded shadow mb-8">
           <h2 className="font-bold text-lg mb-2">Presenças por Série</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-blue-200">
-                  <th className="py-1 px-2">Série</th>
-                  <th className="py-1 px-2">Presentes</th>
-                  <th className="py-1 px-2">Ausentes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {grafSeries.map((g: any) => (
-                  <tr key={g.nome}>
-                    <td className="py-1 px-2">{g.nome}</td>
-                    <td className="py-1 px-2 text-green-700 font-bold">{g.presentes}</td>
-                    <td className="py-1 px-2 text-red-700 font-bold">{g.ausentes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Pie
+            data={{
+              labels: grafSeries.map((g: any) => g.nome + " (Presentes)"),
+              datasets: [
+                {
+                  label: "Presentes",
+                  data: grafSeries.map((g: any) => g.presentes),
+                  backgroundColor: ["#2563eb", "#ef4444"],
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "top" } },
+            }}
+          />
+          <Pie
+            data={{
+              labels: grafSeries.map((g: any) => g.nome + " (Ausentes)"),
+              datasets: [
+                {
+                  label: "Ausentes",
+                  data: grafSeries.map((g: any) => g.ausentes),
+                  backgroundColor: ["#2563eb", "#ef4444"],
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "top" } },
+            }}
+          />
         </div>
         <div className="mt-6 text-center">
           <a href="/" className="text-blue-700 hover:underline">Voltar para o início</a>
