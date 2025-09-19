@@ -3,6 +3,35 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Alunos() {
+  // Importação de alunos via CSV
+  async function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const Papa = (await import("papaparse")).default;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results: any) => {
+        const alunosToInsert = results.data.map((row: any) => ({
+          nome: row["Nome"] || row["nome"],
+          serie: row["Série"] || row["serie"] || row["série"],
+          curso: row["Curso"] || row["curso"],
+        })).filter((a: any) => a.nome && a.serie && a.curso);
+        if (alunosToInsert.length) {
+          const { error } = await supabase.from("alunos").insert(alunosToInsert);
+          if (!error) {
+            alert("Alunos importados com sucesso!");
+            window.location.reload();
+          } else {
+            alert("Erro ao importar alunos: " + error.message);
+          }
+        } else {
+          alert("Nenhum aluno válido encontrado no arquivo.");
+        }
+      },
+      error: (err: any) => alert("Erro ao ler CSV: " + err.message),
+    });
+  }
   const [alunos, setAlunos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,13 +75,25 @@ export default function Alunos() {
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
       <div className="w-full max-w-3xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
         <h1 className="text-2xl font-bold mb-4 text-blue-700">Alunos Cadastrados</h1>
-        <button
-          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          onClick={exportCSV}
-          disabled={loading || !alunos.length}
-        >
-          Exportar CSV
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
+          <button
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            onClick={exportCSV}
+            disabled={loading || !alunos.length}
+          >
+            Exportar CSV
+          </button>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <span className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Importar CSV</span>
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={handleImportCSV}
+              disabled={loading}
+            />
+          </label>
+        </div>
         {loading ? (
           <div className="text-center">Carregando...</div>
         ) : (

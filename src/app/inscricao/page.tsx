@@ -3,6 +3,47 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Inscricao() {
+  // Importação de inscrições via CSV
+  async function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const Papa = (await import("papaparse")).default;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results: any) => {
+        // Espera colunas: Nome, Série, Curso, Oficina
+        const rows = results.data;
+        // Buscar oficinas existentes
+        const { data: oficinasDb } = await supabase.from("oficinas").select("id, nome");
+        // Buscar alunos existentes
+        const { data: alunosDb } = await supabase.from("alunos").select("id, nome, serie, curso");
+        const inscricoesToInsert = rows.map((row: any) => {
+          const oficina = oficinasDb?.find((o: any) => o.nome === row["Oficina"]);
+          let aluno = alunosDb?.find((a: any) => a.nome === row["Nome"] && a.serie === row["Série"] && a.curso === row["Curso"]);
+          // Se não existe, cria aluno
+          if (!aluno && row["Nome"] && row["Série"] && row["Curso"]) {
+            // Cria aluno e retorna id depois
+            // Aqui, para simplificar, não insere aluno novo, só importa inscrições de alunos já cadastrados
+            return null;
+          }
+          return oficina && aluno ? { aluno_id: aluno.id, oficina_id: oficina.id } : null;
+        }).filter(Boolean);
+        if (inscricoesToInsert.length) {
+          const { error } = await supabase.from("inscricoes").insert(inscricoesToInsert);
+          if (!error) {
+            alert("Inscrições importadas com sucesso!");
+            window.location.reload();
+          } else {
+            alert("Erro ao importar inscrições: " + error.message);
+          }
+        } else {
+          alert("Nenhuma inscrição válida encontrada no arquivo.");
+        }
+      },
+      error: (err: any) => alert("Erro ao ler CSV: " + err.message),
+    });
+  }
   // Função para exportar inscrições em CSV
   const [inscricoes, setInscricoes] = useState<any[]>([]);
   useEffect(() => {
@@ -90,13 +131,24 @@ export default function Inscricao() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
       <div className="w-full max-w-3xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
-        <button
-          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          onClick={exportCSV}
-          disabled={!inscricoes.length}
-        >
-          Exportar Inscrições CSV
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
+          <button
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            onClick={exportCSV}
+            disabled={!inscricoes.length}
+          >
+            Exportar Inscrições CSV
+          </button>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <span className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Importar CSV</span>
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={handleImportCSV}
+            />
+          </label>
+        </div>
       </div>
       <div className="w-full max-w-lg mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
         <h1 className="text-2xl font-bold mb-4 text-blue-700">Inscrição nas Oficinas</h1>

@@ -3,6 +3,49 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Presenca() {
+  // Importação de presenças via CSV
+  async function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const Papa = (await import("papaparse")).default;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results: any) => {
+        // Espera colunas: Nome, Série, Curso, Oficina, Presente
+        const rows = results.data;
+        // Buscar oficinas existentes
+        const { data: oficinasDb } = await supabase.from("oficinas").select("id, nome");
+        // Buscar alunos existentes
+        const { data: alunosDb } = await supabase.from("alunos").select("id, nome, serie, curso");
+        // Buscar inscrições existentes
+        const { data: inscricoesDb } = await supabase.from("inscricoes").select("id, aluno_id, oficina_id");
+        const presencasToInsert = rows.map((row: any) => {
+          const oficina = oficinasDb?.find((o: any) => o.nome === row["Oficina"]);
+          const aluno = alunosDb?.find((a: any) => a.nome === row["Nome"] && a.serie === row["Série"] && a.curso === row["Curso"]);
+          const inscricao = inscricoesDb?.find((i: any) => i.aluno_id === aluno?.id && i.oficina_id === oficina?.id);
+          if (!inscricao) return null;
+          return {
+            inscricao_id: inscricao.id,
+            presente: row["Presente"]?.toLowerCase() === "sim" || row["Presente"] === "1" || row["Presente"] === "true",
+            data: new Date().toISOString().slice(0, 10),
+          };
+        }).filter(Boolean);
+        if (presencasToInsert.length) {
+          const { error } = await supabase.from("presencas").insert(presencasToInsert);
+          if (!error) {
+            alert("Presenças importadas com sucesso!");
+            window.location.reload();
+          } else {
+            alert("Erro ao importar presenças: " + error.message);
+          }
+        } else {
+          alert("Nenhuma presença válida encontrada no arquivo.");
+        }
+      },
+      error: (err: any) => alert("Erro ao ler CSV: " + err.message),
+    });
+  }
   // Função para exportar presenças em CSV
   function exportCSV() {
     if (!alunos.length) return;
@@ -89,13 +132,24 @@ export default function Presenca() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
       <div className="w-full max-w-3xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
-        <button
-          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          onClick={exportCSV}
-          disabled={!alunos.length}
-        >
-          Exportar Presenças CSV
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
+          <button
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            onClick={exportCSV}
+            disabled={!alunos.length}
+          >
+            Exportar Presenças CSV
+          </button>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <span className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Importar CSV</span>
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={handleImportCSV}
+            />
+          </label>
+        </div>
       </div>
       <div className="w-full max-w-2xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
         <h1 className="text-2xl font-bold mb-4 text-blue-700">Controle de Presença</h1>
