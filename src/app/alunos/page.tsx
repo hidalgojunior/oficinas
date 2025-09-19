@@ -1,3 +1,4 @@
+import Link from 'next/link';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
@@ -124,7 +125,7 @@ export default function Alunos() {
           </div>
         )}
         <div className="mt-6 text-center">
-          <a href="/" className="text-blue-700 hover:underline">Voltar para o início</a>
+          <Link href="/" className="text-blue-700 hover:underline">Voltar para o início</Link>
         </div>
       </div>
     </main>
