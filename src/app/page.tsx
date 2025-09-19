@@ -1,12 +1,13 @@
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-red-500">
       <div className="w-full max-w-2xl mx-auto my-8 p-8 rounded-3xl bg-white bg-opacity-80 shadow-2xl">
         <div className="flex items-center gap-4 mb-6">
-          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" className="w-16 h-16" />
+          <Image src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" width={64} height={64} className="w-16 h-16" />
           <div>
             <h1 className="text-3xl font-extrabold text-blue-700">Oficinas Etec Devisate</h1>
             <p className="text-gray-700">Controle de Presenças e Participação</p>
