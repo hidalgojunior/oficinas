@@ -40,7 +40,7 @@ export default function Alunos() {
   useEffect(() => {
     async function fetchAlunos() {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("inscricoes")
         .select("id, alunos(nome, serie, curso), oficinas(nome, horario)")
         .order("alunos.nome");
